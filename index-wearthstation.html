@@ -61,7 +61,7 @@
         
         <!-- Add your site or application content here -->
         <div align="center">
-            <font size="12px"><p>BeiDou Collar Tracking System </p></font>
+            <font size="12px"><p>Galileo WEATHER STATION. </p></font>
             <font size="12px"><p></p></font>
         </div>
          <div id="map"></div>
@@ -131,22 +131,62 @@
               if(msg != "wait" && msg != "start"){
                   console.log(msg);
                   //msgobj = JSON.parse(msg);
-              
-                  var longitude = msg.split('|')[0];
-                  var latitude = msg.split('|')[1];
-                  console.log(longitude);
-                    
-                   var circle = L.circle([latitude,longitude], 10, {
+                  msgobj = msg;
+                  console.log(msgobj);
+                  sensordata.light = msgobj.Light;
+                  sensordata.sound = msgobj.Sound;
+                  sensordata.temp = msgobj.Temp;
+                  
+                  chartdata.temp.data.push([sensordata.count,parseFloat(sensordata.temp)]);
+                  chartdata.light.data.push([sensordata.count,parseFloat(sensordata.light)]);
+                  chartdata.sound.data.push([sensordata.count,parseFloat(sensordata.sound)]);
+                  
+                  //chartdata.waterlevel.data.push([sensordata.count,parseFloat(sensordata.waterlevel)]);
+                  
+                  //msgarray = msg.split("|");
+                  //sensordata.waterlevel = msgarray[0];
+                  //sensordata.pm25 = msgarray[1];
+                  //sensordata.humidity = msgarray[2];
+                  //sensordata.temp = msgarray[3];
+                  //sensordata.wind = msgarray[4];
+                  //sensordata.light = msgarray[5];
+                  //sensordata.pressure = msgarray[6];
+                  //sensordata.count = sensordata.count +1;
+                  
+                  //chartdata.waterlevel.data.push([sensordata.count,parseFloat(sensordata.waterlevel)]);
+                  //chartdata.pm25.data.push([sensordata.count,parseFloat(sensordata.pm25)]);
+                  //chartdata.humidity.data.push([sensordata.count,parseFloat(sensordata.humidity)]);
+                  //chartdata.temp.data.push([sensordata.count,parseFloat(sensordata.temp)]);
+                  //chartdata.wind.data.push([sensordata.count,parseFloat(sensordata.wind)]);
+                  //chartdata.light.data.push([sensordata.count,parseFloat(sensordata.light)]);
+                  //chartdata.pressure.data.push([sensordata.count,parseFloat(sensordata.pressure)]);
+                  
+                  //console.log(chartdata);
+                  updateflot();
+                  //updateChart(sensordata);
+                  //updateData(sensordata);
+                  
+//                  var marker = L.marker([30.699,104.048]).addTo(map).bindPopup("降水量："+sensordata.waterlevel +"<br />" + "湿度：" +sensordata.humidity +"<br />"+ "PM2.5：" +sensordata.pm25 +"<br />" + "温度：" +sensordata.temp + "<br />" + "风力：" +sensordata.wind + "<br />" + "光照：" +sensordata.light + "<br />" + "气压：" +sensordata.pressure).openPopup();
+                  
+                   var circle = L.circle([30.699,104.050], 10, {
             color: 'red',
             fillColor: '#f03',
             fillOpacity: 0.5
-        }).addTo(map).bindPopup("Here!<br/>longitude:"+longitude+"<br/>latitude:"+latitude ).openPopup();
+        }).addTo(map).bindPopup("降水量："+sensordata.waterlevel +"<br />" + "湿度：" +sensordata.humidity + "%"+"<br />"+ "PM2.5：" +sensordata.pm25 +"<br />" + "温度：" +sensordata.temp+ " ℃" + "<br />" + "风力：" +(sensordata.wind *2.1).toPrecision(4)+ "m/s"+ "<br />" + "光照： 较弱" + "<br />" + "气压：" +sensordata.pressure+ "hPa"+"<br />"+ "声音：" +sensordata.sound+ "s"+"<br />" ).openPopup();
 
               }
 
           });
 
 
+    
+            //显示数据
+//         var updateData = function (sensor) {
+//            $("#sensordata").html("降水量："+sensor.waterlevel +"<br />" + "湿度：" +sensor.humidity +"<br />"+ "PM2.5：" +sensor.pm25 +"<br />" + "温度：" +sensor.temp + "<br />" + "风力：" +sensor.wind + "<br />" + "光照：" +sensor.light + "<br />" + "气压：" +sensor.pressure+ "hPa：");
+//		};
+        
+
+            
 
 
 		// We use an inline data source in the example, usually data would
