@@ -118,33 +118,77 @@
             
           
           //get data
-          var socket = io.connect('http://localhost:3000');;
-            //socket.emit('chat message', $('#m').val());
-            socket.on('connect', function() {  
-                socket.send('hello');
-            });
+            var wsServer = 'ws://localhost:3000';
+            var ws = new WebSocket(wsServer);
+            
+            ws.onopen = function (e) {
+                console.log("Connected to WebSocket server.",e);
+                sendMessage("webstart");
+                } ;
 
-          socket.on('message', function(msg){
-            //$('#messages').append($('<li>').text(msg));
-              socket.emit('message', 'got');
-              console.log(msg);
-              if(msg != "wait" && msg != "start"){
-                  console.log(msg);
-                  //msgobj = JSON.parse(msg);
-              
-                  var longitude = msg.split('|')[0];
-                  var latitude = msg.split('|')[1];
-                  console.log(longitude);
+                ws.onclose = function (e) {
+                console.log("Disconnected",e);
+                } ;
+
+                ws.onmessage = function(e) {
+                    console.log("RECEIVED: " + e.data, e);
+                    msg = e.data;
+                    if(msg != "wait" && msg != "start"){
+                      console.log(msg);
+                      //msgobj = JSON.parse(msg);
+
+                      var longitude = msg.split('|')[0];
+                      var latitude = msg.split('|')[1];
+                      console.log(longitude);
+
+                       var circle = L.circle([latitude,longitude], 10, {
+                            color: 'red',
+                            fillColor: '#f03',
+                            fillOpacity: 0.5
+                        }).addTo(map).bindPopup("Here!<br/>longitude:"+longitude+"<br/>latitude:"+latitude ).openPopup();
+
+                    }
                     
-                   var circle = L.circle([latitude,longitude], 10, {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.5
-        }).addTo(map).bindPopup("Here!<br/>longitude:"+longitude+"<br/>latitude:"+latitude ).openPopup();
+                    //ws.close();
+                }
 
-              }
+                ws.onerror = function (e) {
+                console.log('Error occured: ' + e.data,e);
+                } ;
 
-          });
+                var sendMessage = function(msg){
+                ws.send(msg);
+                console.log("SEND : "+ msg);
+            }
+
+//          var  Socket = window.MozWebSocket || window.WebSocket
+//          var socket = io.connect('http://localhost:3000');;
+//            //socket.emit('chat message', $('#m').val());
+//            socket.on('connect', function() {  
+//                socket.send('hello');
+//            });
+//
+//          socket.on('message', function(msg){
+//            //$('#messages').append($('<li>').text(msg));
+//              socket.emit('message', 'got');
+//              console.log(msg);
+//              if(msg != "wait" && msg != "start"){
+//                  console.log(msg);
+//                  //msgobj = JSON.parse(msg);
+//              
+//                  var longitude = msg.split('|')[0];
+//                  var latitude = msg.split('|')[1];
+//                  console.log(longitude);
+//                    
+//                   var circle = L.circle([latitude,longitude], 10, {
+//            color: 'red',
+//            fillColor: '#f03',
+//            fillOpacity: 0.5
+//        }).addTo(map).bindPopup("Here!<br/>longitude:"+longitude+"<br/>latitude:"+latitude ).openPopup();
+//
+//              }
+//
+//          });
 
 
 

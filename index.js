@@ -2,8 +2,12 @@ var express = require('express');
 var app = express();
 app.use('/static', express.static(__dirname + '/public'));
 
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var WebSocket = require('faye-websocket');
+
+var http = require('http');
+var exserver = http.Server(app);
+//var wsserver = require('faye-websocket')(http);
+//var io = require('socket.io')(http);
 
 var dgram = require("dgram");
 var server = dgram.createSocket("udp4");
@@ -84,7 +88,7 @@ server.on("message", function (buf, rinfo) {
 
 server.on("listening", function () {
   var address = server.address();
-  console.log("server listening " +
+  console.log("udp server listening " +
       address.address + ":" + address.port);
 });
 
@@ -97,34 +101,34 @@ app.get('/', function(req, res){
    res.sendfile(__dirname + '/index.html');
 });
 
+var wsserver = http.createServer();
 
-io.on('connection', function(socket){
-   // clients.push(socket);
-  //io.emit('message', "start");
-  socket.on('message', function(msg){
-      
-       socket.emit('message', { hello: 'world' });
-        socket.on('my other event', function (data) {
-        console.log(data);
-        });
-      
-      console.log(msg);
-      io.emit('message', msg);
-      if(sensormsg.length >0){
-          latestsensormsg = sensormsg.shift();
-          io.emit('message', latestsensormsg+"");
-          console.log(latestsensormsg);
-      }else{
-        io.emit('message', "wait");
+var wsclients = new Array();
+wsserver.on('upgrade', function(request, socket, body) {
+  if (WebSocket.isWebSocket(request)) {
+    var ws = new WebSocket(request, socket, body);
+    wsclients.push(ws);
+    ws.on('message', function(event) {
+      if(event.data != 'webstart'){
+           for(i=0;i<wsclients.length;i++){
+            wsclients[i].send(event.data);
+           }
+           // ws.send(event.data);
       }
+    });
 
-  });
+    ws.on('close', function(event) {
+      console.log('close', event.code, event.reason);
+      ws = null;
+    });
+  }
 });
 
+wsserver.listen(3000,function(){
+    console.log('websocket listening on *:3000');
+});
 
-
-
-http.listen(3000, function(){
-  console.log('listening on *:3000');
+exserver.listen(80, function(){
+  console.log('http listening on *:80');
     
 });

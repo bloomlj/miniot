@@ -1,0 +1,9 @@
+{
+  "name": "serial2ws",
+  "version": "0.0.1",
+  "description": "my first serial ws",
+  "dependencies": {
+      "serialport":"*",
+      "faye-websocket":"*"
+  }
+}
