@@ -1,0 +1,8 @@
+{
+  "name": "ws2ws",
+  "version": "0.0.1",
+  "description": "ws client",
+  "dependencies": {
+      "faye-websocket":"*"
+  }
+}

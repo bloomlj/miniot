@@ -118,15 +118,15 @@
             
           
           //get data
-          var socket = io();
+          var socket = io.connect('http://localhost:3000');;
             //socket.emit('chat message', $('#m').val());
             socket.on('connect', function() {  
                 socket.send('hello');
             });
 
-          socket.on('chat message', function(msg){
+          socket.on('message', function(msg){
             //$('#messages').append($('<li>').text(msg));
-              socket.emit('chat message', 'got');
+              socket.emit('message', 'got');
               console.log(msg);
               if(msg != "wait" && msg != "start"){
                   console.log(msg);

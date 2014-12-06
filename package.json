@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "express": "~4.9.0",
+    "faye-websocket": "^0.8.1",
     "knex": "^0.7.3",
     "mysql": "^2.5.2",
     "socket.io": "^1.2.1"

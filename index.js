@@ -100,14 +100,22 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
    // clients.push(socket);
-  io.emit('chat message', "start");
-  socket.on('chat message', function(msg){
+  //io.emit('message', "start");
+  socket.on('message', function(msg){
+      
+       socket.emit('message', { hello: 'world' });
+        socket.on('my other event', function (data) {
+        console.log(data);
+        });
+      
+      console.log(msg);
+      io.emit('message', msg);
       if(sensormsg.length >0){
           latestsensormsg = sensormsg.shift();
-          io.emit('chat message', latestsensormsg+"");
+          io.emit('message', latestsensormsg+"");
           console.log(latestsensormsg);
       }else{
-        io.emit('chat message', "wait");
+        io.emit('message', "wait");
       }
 
   });
@@ -119,5 +127,4 @@ io.on('connection', function(socket){
 http.listen(3000, function(){
   console.log('listening on *:3000');
     
-
 });
