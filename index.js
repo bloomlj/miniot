@@ -66,7 +66,7 @@ server.on("message", function (buf, rinfo) {
     msg.longitude.decimal = todecimal(msg.longitude.ddd,msg.longitude.mm,msg.longitude.ss,msg.longitude.s);
     msg.latitude.decimal = todecimal(msg.latitude.ddd,msg.latitude.mm,msg.latitude.ss,msg.latitude.s);
     
-     var now=new Date() 
+    var now=new Date() 
     var nowstring = now.getFullYear()+"-"+now.getMonth()+"-"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
     msg.servertime = nowstring;
     console.log(nowstring);
@@ -76,13 +76,7 @@ server.on("message", function (buf, rinfo) {
     console.log(clientmsg);
     sensormsg.push(clientmsg);
     //now datetime
-   //save to db
-     knex('sensor_data')
-     .insert([{sensor_id:'1',data: JSON.stringify(msg),createdtime:nowstring}])
-     .then(function(ret){
-        console.log(ret);
-        console.log("db save success")
-     });
+
     
     var WSclient= new WebSocket.Client('ws://localhost:3000');
 
@@ -145,7 +139,17 @@ wsserver.on('upgrade', function(request, socket, body) {
     var ws = new WebSocket(request, socket, body);
     wsclients.push(ws);
     ws.on('message', function(event) {
-        
+     
+      //save  to db
+    var now=new Date() 
+    var nowstring = now.getFullYear()+"-"+now.getMonth()+"-"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
+       //save to db
+     knex('sensor_data')
+     .insert([{sensor_id:'1',data: event.data,createdtime:nowstring}])
+     .then(function(ret){
+        console.log(ret);
+        console.log("db save success")
+     });
 
       //broadcast to all client.
       if(event.data != 'webstart'){
