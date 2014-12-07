@@ -139,13 +139,14 @@
 
                       var longitude = msg.split('|')[0];
                       var latitude = msg.split('|')[1];
+                      var servertime = msg.split('|')[2];
                       console.log(longitude);
 
                        var circle = L.circle([latitude,longitude], 10, {
                             color: 'red',
                             fillColor: '#f03',
                             fillOpacity: 0.5
-                        }).addTo(map).bindPopup("Here!<br/>longitude:"+longitude+"<br/>latitude:"+latitude ).openPopup();
+                        }).addTo(map).bindPopup("Here!<br/>longitude:"+longitude+"<br/>latitude:"+latitude+"<br/>datetime:"+servertime ).openPopup();
 
                     }
                     

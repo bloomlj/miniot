@@ -11,11 +11,21 @@ var exserver = http.Server(app);
 
 var dgram = require("dgram");
 var server = dgram.createSocket("udp4");
+//mysql
+var knex = require('knex')({
+  client: 'mysql',
+  connection: {
+    host     : '127.0.0.1',
+    user     : 'root',
+    password : 'password',
+    database : 'lightiot'
+  }
+});
 
 var sensormsg =  new Array();
-
+//save  all ws clients.
 var clients = new Array();
-
+//gps position  format exchange.
 var todecimal = function(ddd,mm,ss,s){
     decimal = ddd+ (mm+ss*0.01+s*0.0001)/ 60 ;
     return decimal;
@@ -36,6 +46,7 @@ server.on("message", function (buf, rinfo) {
     console.log(hexStr);
     
     var msg = {"time":{"h":0,"m":0,"s":0,"ms":0},
+               "servertime":"",
                "longitude":{"ddd":0,"mm":0,"ss":0,"s":0,"decimal":0},
                "latitude":{"ddd":0,"mm":0,"ss":0,"s":0,"decimal":0}
               };
@@ -55,10 +66,23 @@ server.on("message", function (buf, rinfo) {
     msg.longitude.decimal = todecimal(msg.longitude.ddd,msg.longitude.mm,msg.longitude.ss,msg.longitude.s);
     msg.latitude.decimal = todecimal(msg.latitude.ddd,msg.latitude.mm,msg.latitude.ss,msg.latitude.s);
     
-    clientmsg = msg.longitude.decimal+"|"+msg.latitude.decimal;
+     var now=new Date() 
+    var nowstring = now.getFullYear()+"-"+now.getMonth()+"-"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
+    msg.servertime = nowstring;
+    console.log(nowstring);
+     
+    clientmsg = msg.longitude.decimal+"|"+msg.latitude.decimal+"|"+msg.servertime;
     
     console.log(clientmsg);
     sensormsg.push(clientmsg);
+    //now datetime
+   //save to db
+     knex('sensor_data')
+     .insert([{sensor_id:'1',data: JSON.stringify(msg),createdtime:nowstring}])
+     .then(function(ret){
+        console.log(ret);
+        console.log("db save success")
+     });
     
     var WSclient= new WebSocket.Client('ws://localhost:3000');
 
@@ -121,6 +145,9 @@ wsserver.on('upgrade', function(request, socket, body) {
     var ws = new WebSocket(request, socket, body);
     wsclients.push(ws);
     ws.on('message', function(event) {
+        
+
+      //broadcast to all client.
       if(event.data != 'webstart'){
            for(i=0;i<wsclients.length;i++){
             wsclients[i].send(event.data);
