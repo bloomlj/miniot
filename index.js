@@ -59,6 +59,18 @@ server.on("message", function (buf, rinfo) {
     
     console.log(clientmsg);
     sensormsg.push(clientmsg);
+    
+    var WSclient= new WebSocket.Client('ws://localhost:3000');
+
+    WSclient.on('open', function(event) {
+          console.log('open');
+          WSclient.send(clientmsg);
+          //ws.send('104.021|30.709');
+
+          console.log('close');
+          //WSclient.close();
+    });
+    
     //var longitudebuf = msg.slice(0,3);
     
     //console.log("-");
