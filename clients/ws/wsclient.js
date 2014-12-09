@@ -3,7 +3,7 @@ var WebSocket = require('faye-websocket'),
 
 ws.on('open', function(event) {
   console.log('open');
-  ws.send('104.021|30.709');
+  ws.send('21|30|15|60|40');
   console.log('close');
   ws.close();
   

@@ -42,9 +42,6 @@
 	font-size: 14px;
 	line-height: 1.2em;
 }
-
-            
-            
             
             
         </style>
@@ -60,10 +57,7 @@
 
         
         <!-- Add your site or application content here -->
-        <div align="center">
-            <font size="12px"><p>Galileo WEATHER STATION</p></font>
-            <font size="12px"><p></p></font>
-        </div>
+<div><h1>EMS</h1></div>
          <div id="map"></div>
 
         
@@ -105,7 +99,7 @@
           var chartdata=  {"waterlevel":{"label":"降水量","data":[]},"pm25":{"label":"PM2.5","data":[]},"pm10":{"label":"PM10","data":[]},"humidity":{"label":"humidity","data":[]},"temp":{"label":"temp","data":[]},"sound":{"label":"sound","data":[]},"wind":{"label":"wind","data":[]},"light":{"label":"light","data":[]},"pressure":{"label":"pressure","data":[]},"uv":{"label":"uv","data":[]}};
           var time = new Date;
             
-          var map = L.map('map').setView([30.699,104.048], 17);
+          var map = L.map('map').setView([30.7709,103.9244], 17);
            //copyright
 		L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
 			maxZoom: 18,
@@ -137,11 +131,12 @@
                       console.log(msg);
                       //msgobj = JSON.parse(msg);
                         //温度|湿度|紫外线|PM25|PM10
-                  sensordata.temp = msg.split('|')[0];
-                  sensordata.humidity = msg.split('|')[1];
-                  sensordata.uv = msg.split('|')[2];
-                  sensordata.pm25 = msg.split('|')[3];
-                  sensordata.pm10 = msg.split('|')[4];
+                  servertime= msg.split('|')[0]; 
+                  sensordata.temp = msg.split('|')[1];
+                  sensordata.humidity = msg.split('|')[2];
+                  sensordata.uv = msg.split('|')[3];
+                  sensordata.pm25 = msg.split('|')[4];
+                  sensordata.pm10 = msg.split('|')[5];
                   
                   chartdata.temp.data.push([sensordata.count,parseFloat(sensordata.temp)]);
                   chartdata.humidity.data.push([sensordata.count,parseFloat(sensordata.humidity)]);
@@ -151,16 +146,15 @@
                         
                         //the gps info
                         
-//                      var longitude = msg.split('|')[0];
-//                      var latitude = msg.split('|')[1];
-//                      var servertime = msg.split('|')[2];
-//                      console.log(longitude);
+                      var longitude = 30.7709;
+                      var latitude = 103.9244;
+                      console.log(longitude);
 
-//                       var circle = L.circle([latitude,longitude], 10, {
-//                            color: 'red',
-//                            fillColor: '#f03',
-//                            fillOpacity: 0.5
-//                        }).addTo(map).bindPopup("Here!<br/>longitude:"+longitude+"<br/>latitude:"+latitude+"<br/>datetime:"+servertime ).openPopup();
+                       var circle = L.circle([latitude,longitude], 10, {
+                            color: 'red',
+                            fillColor: '#f03',
+                            fillOpacity: 0.5
+                        }).addTo(map).bindPopup("Here!<br/>temp:"+sensordata.temp+"<br/>humidity:"+sensordata.humidity+"<br/>UV:"+sensordata.uv+"<br/>pm2.5:"+sensordata.pm25+"<br/>pm10:"+sensordata.pm10+"<br/>datetime:"+servertime                              ).openPopup();
 
                     }
                     

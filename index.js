@@ -128,7 +128,7 @@ server.bind(8080);
 
 
 app.get('/', function(req, res){
-   res.sendfile(__dirname + '/index.html');
+   res.sendfile(__dirname + '/index_ems.html');
 });
 
 var wsserver = http.createServer();
@@ -143,19 +143,22 @@ wsserver.on('upgrade', function(request, socket, body) {
       //save  to db
     var now=new Date() 
     var nowstring = now.getFullYear()+"-"+now.getMonth()+"-"+now.getDate()+" "+now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
-       //save to db
-     knex('sensor_data')
-     .insert([{sensor_id:'1',data: event.data,createdtime:nowstring}])
-     .then(function(ret){
-        console.log(ret);
-        console.log("db save success")
-     });
+    var msgwithdtime = nowstring+"|"+event.data;
 
       //broadcast to all client.
       if(event.data != 'webstart'){
+          //boardcast
            for(i=0;i<wsclients.length;i++){
-            wsclients[i].send(event.data);
+            wsclients[i].send(msgwithdtime);
            }
+                 //save to db
+         knex('sensor_data')
+         .insert([{sensor_id:'2',data:msgwithdtime,createdtime:nowstring}])
+         .then(function(ret){
+            console.log(ret);
+            console.log("db save success")
+         });
+
            // ws.send(event.data);
       }
     });
