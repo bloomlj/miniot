@@ -10,13 +10,18 @@
         
          <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
         <style>
-        #map { height: 800px; }
+		
+		body{
+			margin-top:0;
+			font-family:"intel-clear","tahoma",Helvetica,"helvetica",Arial,sans-serif;
+		}
+        #map { height: 700px; }
             
             
             .demo-container {
 	box-sizing: border-box;
 	width: 400px;
-	height: 450px;
+	height: 300px;
 	padding: 20px 15px 15px 15px;
 	margin: 15px auto 30px auto;
 	border: 1px solid #ddd;
@@ -42,7 +47,30 @@
 	font-size: 14px;
 	line-height: 1.2em;
 }
-            
+div#header{
+  background-color:#0071c5;
+  color:#fff;
+  
+}
+div#header h1{
+	 text-align:center;
+	 font-size:30px;
+	 line-height:2em;
+}
+#msgbox{
+	line-height:2em;
+}
+#msgbox b{
+	font-size:30px;
+}
+#msgbox i{
+	margin-right:20px;
+	font-size:30px;
+	color:red;
+}
+.leaflet-popup-pane{
+	font-size:30px;
+}
             
         </style>
         
@@ -57,30 +85,45 @@
 
         
         <!-- Add your site or application content here -->
-<div><h1>EMS</h1></div>
+<div id="header"><h1>Intel CD Site IoT Demo: Environment Monitoring System</h1></div>
+<div id="msgbox"></div>
          <div id="map"></div>
 
         
                           
-        <div class="demo-container">
+		<div class="demo-container">
+                    <div>TEMPRATURE</div>
+            <div id="flot_temp" class="demo-placeholder"></div>
+         </div>   
+		 <div class="demo-container">
+                    <div>HUMIDITY</div>
+            <div id="flot_humidity" class="demo-placeholder"></div>
+         </div>	
+		 		<div class="demo-container">
+                    <div>UV</div>
+         <div id="flot_uv" class="demo-placeholder"></div>
+         </div>
+		 
+		 		<div class="demo-container">
+                    <div>PM2.5</div>
+         <div id="flot_pm25" class="demo-placeholder"></div>
+         </div>
+		 
+	   <div class="demo-container">
                     <div>图1：降水量</div>
 		<div id="flot_waterlevel" class="demo-placeholder"></div>
-        </div><div class="demo-container">
-                    <div>图2：PM2.5</div>
-         <div id="flot_pm25" class="demo-placeholder"></div>
-         </div><div class="demo-container">
-                    <div>图3：湿度</div>
-            <div id="flot_humidity" class="demo-placeholder"></div>
-         </div><div class="demo-container">
-                    <div>图4：温度</div>
-            <div id="flot_temp" class="demo-placeholder"></div>
-         </div><div class="demo-container">
+        </div>
+
+
+		 <div class="demo-container">
                     <div>图5：风力</div>
             <div id="flot_wind" class="demo-placeholder"></div>
-         </div><div class="demo-container">
+         </div>
+		 <div class="demo-container">
                     <div>图6：光照</div>
             <div id="flot_light" class="demo-placeholder"></div>
-         </div><div class="demo-container">
+         </div>
+		 <div class="demo-container">
                     <div>图7：大气压</div>
             <div id="flot_pressure" class="demo-placeholder"></div>
          </div>
@@ -99,17 +142,16 @@
           var chartdata=  {"waterlevel":{"label":"降水量","data":[]},"pm25":{"label":"PM2.5","data":[]},"pm10":{"label":"PM10","data":[]},"humidity":{"label":"humidity","data":[]},"temp":{"label":"temp","data":[]},"sound":{"label":"sound","data":[]},"wind":{"label":"wind","data":[]},"light":{"label":"light","data":[]},"pressure":{"label":"pressure","data":[]},"uv":{"label":"uv","data":[]}};
           var time = new Date;
             
-          var map = L.map('map').setView([30.7709,103.9244], 17);
+          var map = L.map('map').setView([30.7709,103.9244], 12);
            //copyright
 		L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
 			maxZoom: 18,
-			attribution: 'SWJTU WEATHER STATION.&copy; <a href="http://maker.swjtu.edu.cn">SWJTU MAKERSPACE</a> Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			attribution: 'EMS.&copy; <a href="http://www.intel.com/content/www/us/en/internet-of-things/overview.html?wapkw=iot">Intel IoT</a> Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
 			id: 'examples.map-i875mjb7'
 		}).addTo(map);
-            
-            
+                       
           
           //get data
             var wsServer = 'ws://localhost:3000';
@@ -138,23 +180,29 @@
                   sensordata.pm25 = msg.split('|')[4];
                   sensordata.pm10 = msg.split('|')[5];
                   
+				  sensordata.count+=1;
+				  
                   chartdata.temp.data.push([sensordata.count,parseFloat(sensordata.temp)]);
                   chartdata.humidity.data.push([sensordata.count,parseFloat(sensordata.humidity)]);
                   chartdata.uv.data.push([sensordata.count,parseFloat(sensordata.uv)]);
                   chartdata.pm25.data.push([sensordata.count,parseFloat(sensordata.pm25)]);
                   chartdata.pm10.data.push([sensordata.count,parseFloat(sensordata.pm10)]);    
-                        
+                   console.log(sensordata.count);
                         //the gps info
                         
                       var longitude = 30.7709;
                       var latitude = 103.9244;
                       console.log(longitude);
 
-                       var circle = L.circle([latitude,longitude], 10, {
+                       var circle = L.circle([30.7709,103.9244], 10, {
                             color: 'red',
                             fillColor: '#f03',
                             fillOpacity: 0.5
-                        }).addTo(map).bindPopup("Here!<br/>temp:"+sensordata.temp+"<br/>humidity:"+sensordata.humidity+"<br/>UV:"+sensordata.uv+"<br/>pm2.5:"+sensordata.pm25+"<br/>pm10:"+sensordata.pm10+"<br/>datetime:"+servertime                              ).openPopup();
+                        }).addTo(map).bindPopup("Intel SITE Garden!<br/>temp:"+sensordata.temp+"<br/>humidity:"+sensordata.humidity+"<br/>UV:"+sensordata.uv+"<br/>pm2.5:"+sensordata.pm25+"<br/>pm10:"+sensordata.pm10+"<br/>datetime:"+servertime ).openPopup();
+						
+					 $('#msgbox').html("<b>TEMPRATURE:</b><i>"+sensordata.temp+"</i><b>HUMIDITY:</b><i>"+sensordata.humidity+"</i><b>UV:</b><i>"+sensordata.uv+"</i><b>PM2.5:</b><i>"+sensordata.pm25+"</i><b>PM10:</b><i>"+sensordata.pm10+"</i><b>DATETIME:</b><i>"+servertime+"</i>" );
+					 
+					 updateflot();
 
                     }
                     
@@ -212,14 +260,17 @@
 		// Set up the control widget
 
 		var updateInterval = 30;
+		
                   chartdata.waterlevel.data.push([sensordata.count,parseFloat(sensordata.waterlevel)]);
                   chartdata.pm25.data.push([sensordata.count,parseFloat(sensordata.pm25)]);
+				  chartdata.uv.data.push([sensordata.count,parseFloat(sensordata.uv)]);
                   chartdata.humidity.data.push([sensordata.count,parseFloat(sensordata.humidity)]);
                   chartdata.temp.data.push([sensordata.count,parseFloat(sensordata.temp)]);
                   chartdata.wind.data.push([sensordata.count,parseFloat(sensordata.wind)]);
                   chartdata.light.data.push([sensordata.count,parseFloat(sensordata.light)]);
                   chartdata.sound.data.push([sensordata.count,parseFloat(sensordata.sound)]);
                   chartdata.pressure.data.push([sensordata.count,parseFloat(sensordata.pressure)]);
+				  console.log(chartdata);
 
 		var flot_waterlevel = $.plot("#flot_waterlevel", [ getRandomData()], {
 			series: {
@@ -238,7 +289,7 @@
 			},
 			yaxis: {
 				min: 0,
-				max: 3500
+				max: 1000
 			},
 			xaxis: { },
 		});
@@ -252,13 +303,26 @@
 			},
 			xaxis: { },
 		});
+		
+		                var flot_uv = $.plot("#flot_uv", [ getRandomData()], {
+			series: {
+				shadowSize: 0	// Drawing is faster without shadows
+			},
+			yaxis: {
+				min: 0,
+				max: 100
+			},
+			xaxis: { },
+		});
+		
+		
                      var flot_temp = $.plot("#flot_temp", [ getRandomData()], {
 			series: {
 				shadowSize: 0	// Drawing is faster without shadows
 			},
 			yaxis: {
 				min: 0,
-				max: 60
+				max: 50
 			},
 			xaxis: { },
 		});
@@ -311,6 +375,9 @@
             flot_pm25.setData([chartdata.pm25.data]);
             flot_pm25.draw();
             
+			flot_uv.setData([chartdata.uv.data]);
+            flot_uv.draw();
+			
             flot_humidity.setData([chartdata.humidity.data]);
             flot_humidity.draw();
             

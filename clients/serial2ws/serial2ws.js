@@ -1,6 +1,6 @@
 //var dgram = require('dgram');
 var SerialPort = require("serialport").SerialPort
-var serialPort = new SerialPort("COM6", {
+var serialPort = new SerialPort("COM4", {
   baudrate: 38400
 });
 
