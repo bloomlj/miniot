@@ -7,17 +7,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-        
+
          <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
         <style>
-		
+
 		body{
 			margin-top:0;
 			font-family:"intel-clear","tahoma",Helvetica,"helvetica",Arial,sans-serif;
 		}
         #map { height: 700px; }
-            
-            
+
+
             .demo-container {
 	box-sizing: border-box;
 	width: 400px;
@@ -36,7 +36,7 @@
 	-ms-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 	-moz-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 	-webkit-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    
+
     float:left;
     margin:10px;
 }
@@ -50,7 +50,7 @@
 div#header{
   background-color:#0071c5;
   color:#fff;
-  
+
 }
 div#header h1{
 	 text-align:center;
@@ -71,11 +71,10 @@ div#header h1{
 .leaflet-popup-pane{
 	font-size:30px;
 }
-            
+
         </style>
-        
-          <script type="text/javascript" src="/static/jquery-1.10.2.min.js"></script>   
-        
+
+          <script type="text/javascript" src="/static/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="/static/canvasjs.js"></script>
         <script language="javascript" type="text/javascript" src="/static/jquery.flot.js"></script>
         <script language="javascript" type="text/javascript" src="/static/jquery.flot.time.js"></script>
@@ -83,80 +82,44 @@ div#header h1{
     </head>
     <body>
 
-        
-        <!-- Add your site or application content here -->
-<div id="header"><h1>Intel CD Site IoT Demo: Environment Monitoring System</h1></div>
-<div id="msgbox"></div>
-         <div id="map"></div>
 
-        
-                          
+        <!-- Add your site or application content here -->
+<div id="header"><h1>Intel CD Site IoT Demo: R.T.M</h1></div>
+<div id="msgbox"></div>
+
+
 		<div class="demo-container">
                     <div>TEMPRATURE</div>
             <div id="flot_temp" class="demo-placeholder"></div>
-         </div>   
-		 <div class="demo-container">
-                    <div>HUMIDITY</div>
-            <div id="flot_humidity" class="demo-placeholder"></div>
-         </div>	
-		 		<div class="demo-container">
-                    <div>UV</div>
-         <div id="flot_uv" class="demo-placeholder"></div>
          </div>
-		 
+		 <div class="demo-container">
+                    <div>humidity</div>
+            <div id="flot_humidity" class="demo-placeholder"></div>
+         </div>
 		 		<div class="demo-container">
                     <div>PM2.5</div>
          <div id="flot_pm25" class="demo-placeholder"></div>
          </div>
-		 
-	   <div class="demo-container">
-                    <div>图1：降水量</div>
-		<div id="flot_waterlevel" class="demo-placeholder"></div>
-        </div>
 
+         <div class="demo-container">
+                     <div>甲醛</div>
+          <div id="flot_hcao" class="demo-placeholder"></div>
+          </div>
 
-		 <div class="demo-container">
-                    <div>图5：风力</div>
-            <div id="flot_wind" class="demo-placeholder"></div>
-         </div>
-		 <div class="demo-container">
-                    <div>图6：光照</div>
-            <div id="flot_light" class="demo-placeholder"></div>
-         </div>
-		 <div class="demo-container">
-                    <div>图7：大气压</div>
-            <div id="flot_pressure" class="demo-placeholder"></div>
-         </div>
-        <div class="demo-container">
-                      <div>图7：声音</div>
-            <div id="flot_sound" class="demo-placeholder"></div>
-         </div>      
-        
-
-        
-         <script src="/static/leaflet.js"></script>
-         
-        
         <script>
-          var sensordata = {"count":0,"waterlevel":"0","pm25":"0","pm10":"0","humidity":"0","temp":"0","wind":"0","light":"0","pressure":"0","uv":"0"}
-          var chartdata=  {"waterlevel":{"label":"降水量","data":[]},"pm25":{"label":"PM2.5","data":[]},"pm10":{"label":"PM10","data":[]},"humidity":{"label":"humidity","data":[]},"temp":{"label":"temp","data":[]},"sound":{"label":"sound","data":[]},"wind":{"label":"wind","data":[]},"light":{"label":"light","data":[]},"pressure":{"label":"pressure","data":[]},"uv":{"label":"uv","data":[]}};
+          var sensordata = {"count":0,"temp":"0","humidity":"0","hcao":"0","pm25":"0"}
+          var chartdata=  {"temp":{"label":"temp","data":[]},"humidity":{"label":"humidity","data":[]},"pm25":{"label":"PM2.5","data":[]},"hcao":{"label":"HCAO","data":[]}};
           var time = new Date;
-            
-          var map = L.map('map').setView([30.7709,103.9244], 12);
-           //copyright
-		L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
-			maxZoom: 18,
-			attribution: 'EMS.&copy; <a href="http://www.intel.com/content/www/us/en/internet-of-things/overview.html?wapkw=iot">Intel IoT</a> Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-			id: 'examples.map-i875mjb7'
-		}).addTo(map);
-                       
-          
-          //get data
-            var wsServer = 'ws://localhost:3000';
+            //get data
+            var wsServer = 'ws://10.0.0.15:3000';
             var ws = new WebSocket(wsServer);
-            
+			//ws.send("open");
+			 //define ws.open();
+			 var sendMessage = function(msg){
+                ws.send(msg);
+                console.log("SEND : "+ msg);
+            }
+
             ws.onopen = function (e) {
                 console.log("Connected to WebSocket server.",e);
                 sendMessage("webstart");
@@ -165,60 +128,36 @@ div#header h1{
                 ws.onclose = function (e) {
                 console.log("Disconnected",e);
                 } ;
-
+				//收到数据对数据进行处理
                 ws.onmessage = function(e) {
                     console.log("RECEIVED: " + e.data, e);
                     msg = e.data;
                     if(msg != "wait" && msg != "start"){
-                      console.log(msg);
-                      //msgobj = JSON.parse(msg);
-                        //温度|湿度|紫外线|PM25|PM10
-                  servertime= msg.split('|')[0]; 
+                      console.log(msg+"-copy");
+                      //湿度|温度|PM25|甲醛
+                  //servertime= msg.split('|')[0];
+                  sensordata.humidity = msg.split('|')[0];
                   sensordata.temp = msg.split('|')[1];
-                  sensordata.humidity = msg.split('|')[2];
-                  sensordata.uv = msg.split('|')[3];
-                  sensordata.pm25 = msg.split('|')[4];
-                  sensordata.pm10 = msg.split('|')[5];
-                  
-				  sensordata.count+=1;
-				  
-                  chartdata.temp.data.push([sensordata.count,parseFloat(sensordata.temp)]);
-                  chartdata.humidity.data.push([sensordata.count,parseFloat(sensordata.humidity)]);
-                  chartdata.uv.data.push([sensordata.count,parseFloat(sensordata.uv)]);
-                  chartdata.pm25.data.push([sensordata.count,parseFloat(sensordata.pm25)]);
-                  chartdata.pm10.data.push([sensordata.count,parseFloat(sensordata.pm10)]);    
-                   console.log(sensordata.count);
-                        //the gps info
-                        
-                      var longitude = 30.7709;
-                      var latitude = 103.9244;
-                      console.log(longitude);
+                  sensordata.pm25 = msg.split('|')[2];
+                  sensordata.hcao = msg.split('|')[3];
+                  console.log(sensordata);
+                  //update msgbox
+                  $('#msgbox').html("湿度:"+sensordata.humidity+"温度:"+sensordata.temp+"PM2.5:"+sensordata.pm25+"甲醛:"+sensordata.hcao);
 
-                       var circle = L.circle([30.7709,103.9244], 10, {
-                            color: 'red',
-                            fillColor: '#f03',
-                            fillOpacity: 0.5
-                        }).addTo(map).bindPopup("Intel SITE Garden!<br/>temp:"+sensordata.temp+"<br/>humidity:"+sensordata.humidity+"<br/>UV:"+sensordata.uv+"<br/>pm2.5:"+sensordata.pm25+"<br/>pm10:"+sensordata.pm10+"<br/>datetime:"+servertime ).openPopup();
-						
-					 $('#msgbox').html("<b>TEMPRATURE:</b><i>"+sensordata.temp+"</i><b>HUMIDITY:</b><i>"+sensordata.humidity+"</i><b>UV:</b><i>"+sensordata.uv+"</i><b>PM2.5:</b><i>"+sensordata.pm25+"</i><b>PM10:</b><i>"+sensordata.pm10+"</i><b>DATETIME:</b><i>"+servertime+"</i>" );
-					 
-					 updateflot();
+				         sensordata.count+=1;
 
+
+
+                  //update the float
+                  updateflot();
                     }
-                    
+
                     //ws.close();
                 }
 
                 ws.onerror = function (e) {
                 console.log('Error occured: ' + e.data,e);
                 } ;
-
-                var sendMessage = function(msg){
-                ws.send(msg);
-                console.log("SEND : "+ msg);
-            }
-
-
 
 		// We use an inline data source in the example, usually data would
 		// be fetched from a server
@@ -230,9 +169,7 @@ div#header h1{
 
 			if (data.length > 0)
 				data = data.slice(1);
-
 			// Do a random walk
-
 			while (data.length < totalPoints) {
 
 				var prev = data.length > 0 ? data[data.length - 1] : 50,
@@ -259,41 +196,14 @@ div#header h1{
 
 		// Set up the control widget
 
-		var updateInterval = 30;
-		
-                  chartdata.waterlevel.data.push([sensordata.count,parseFloat(sensordata.waterlevel)]);
-                  chartdata.pm25.data.push([sensordata.count,parseFloat(sensordata.pm25)]);
-				  chartdata.uv.data.push([sensordata.count,parseFloat(sensordata.uv)]);
-                  chartdata.humidity.data.push([sensordata.count,parseFloat(sensordata.humidity)]);
-                  chartdata.temp.data.push([sensordata.count,parseFloat(sensordata.temp)]);
-                  chartdata.wind.data.push([sensordata.count,parseFloat(sensordata.wind)]);
-                  chartdata.light.data.push([sensordata.count,parseFloat(sensordata.light)]);
-                  chartdata.sound.data.push([sensordata.count,parseFloat(sensordata.sound)]);
-                  chartdata.pressure.data.push([sensordata.count,parseFloat(sensordata.pressure)]);
-				  console.log(chartdata);
+		//var updateInterval = 30;
 
-		var flot_waterlevel = $.plot("#flot_waterlevel", [ getRandomData()], {
-			series: {
-				shadowSize: 0	// Drawing is faster without shadows
-			},
-			yaxis: {
-				min: 0,
-				max: 2000
-			},
-			xaxis: { },
-		});
+    // chartdata.temp.data.push([sensordata.count,parseFloat(sensordata.temp)]);
+    // chartdata.humidity.data.push([sensordata.count,parseFloat(sensordata.humidity)]);
+    // chartdata.pm25.data.push([sensordata.count,parseFloat(sensordata.pm25)]);
+    // chartdata.hcao.data.push([sensordata.count,parseFloat(sensordata.hcao)]);
 
-         var flot_pm25 = $.plot("#flot_pm25", [ getRandomData()], {
-			series: {
-				shadowSize: 0	// Drawing is faster without shadows
-			},
-			yaxis: {
-				min: 0,
-				max: 1000
-			},
-			xaxis: { },
-		});
-                var flot_humidity = $.plot("#flot_humidity", [ getRandomData()], {
+    var flot_humidity = $.plot("#flot_humidity", [ getRandomData()], {
 			series: {
 				shadowSize: 0	// Drawing is faster without shadows
 			},
@@ -301,22 +211,13 @@ div#header h1{
 				min: 0,
 				max: 100
 			},
-			xaxis: { },
+			xaxis: {
+        min: 0,
+      	max: 100
+       },
 		});
-		
-		                var flot_uv = $.plot("#flot_uv", [ getRandomData()], {
-			series: {
-				shadowSize: 0	// Drawing is faster without shadows
-			},
-			yaxis: {
-				min: 0,
-				max: 100
-			},
-			xaxis: { },
-		});
-		
-		
-                     var flot_temp = $.plot("#flot_temp", [ getRandomData()], {
+
+      var flot_temp = $.plot("#flot_temp", [ getRandomData()], {
 			series: {
 				shadowSize: 0	// Drawing is faster without shadows
 			},
@@ -324,95 +225,90 @@ div#header h1{
 				min: 0,
 				max: 50
 			},
-			xaxis: { },
+      xaxis: {
+        show:true,
+        min: 0,
+        max: 100
+       },
 		});
-                     var flot_wind = $.plot("#flot_wind", [ getRandomData()], {
-			series: {
-				shadowSize: 0	// Drawing is faster without shadows
-			},
-			yaxis: {
-				min: 0,
-				max: 10
-			},
-			xaxis: { },
-		});
-                     var flot_light = $.plot("#flot_light", [ getRandomData()], {
-			series: {
-				shadowSize: 0	// Drawing is faster without shadows
-			},
-			yaxis: {
-				min: 0,
-				max: 2048
-			},
-			xaxis: { },
-		});
-                      var flot_sound = $.plot("#flot_sound", [ getRandomData()], {
-			series: {
-				shadowSize: 0	// Drawing is faster without shadows
-			},
-			yaxis: {
-				min: 0,
-				max: 2048
-			},
-			xaxis: { },
-		});           
-                    var flot_pressure = $.plot("#flot_pressure", [ getRandomData()], {
-			series: {
-				shadowSize: 0	// Drawing is faster without shadows
-			},
-			yaxis: {
-				min: 0,
-				max: 1200
-			},
-			xaxis: { },
-		});
-            
+
+    var flot_pm25 = $.plot("#flot_pm25", [ getRandomData()], {
+    series: {
+      shadowSize: 0	// Drawing is faster without shadows
+    },
+    yaxis: {
+      min: 0,
+      max: 100
+    },
+    xaxis: {
+      min: 0,
+      max: 100
+     },
+  });
+
+  var flot_hcao = $.plot("#flot_hcao", [ getRandomData()], {
+  series: {
+    shadowSize: 0	// Drawing is faster without shadows
+  },
+  yaxis: {
+    min: 0,
+    max: 10
+  },
+  xaxis: {
+    min: 0,
+    max: 100
+   },
+});
+
+
 		function updateflot() {
 
-			flot_waterlevel.setData([chartdata.waterlevel.data]);
-            flot_waterlevel.draw();
-            
-            flot_pm25.setData([chartdata.pm25.data]);
-            flot_pm25.draw();
-            
-			flot_uv.setData([chartdata.uv.data]);
-            flot_uv.draw();
-			
-            flot_humidity.setData([chartdata.humidity.data]);
-            flot_humidity.draw();
-            
-            flot_temp.setData([chartdata.temp.data]);
-            flot_temp.draw();
-            
-            flot_wind.setData([chartdata.wind.data]);
-            flot_wind.draw();
-            
-            flot_light.setData([chartdata.light.data]);
-            flot_light.draw();
 
-            flot_sound.setData([chartdata.sound.data]);
-            flot_sound.draw();
-            console.log(chartdata.sound.data);
-            
-            flot_pressure.setData([chartdata.pressure.data]);
-            flot_pressure.draw();
-            
-            //console.log(chartdata.waterlevel.data);
-			
-            
-            
+      chartdata.temp.data.push([sensordata.count,parseFloat(sensordata.temp)]);
+      chartdata.humidity.data.push([sensordata.count,parseFloat(sensordata.humidity)]);
+      chartdata.pm25.data.push([sensordata.count,parseFloat(sensordata.pm25)]);
+      chartdata.hcao.data.push([sensordata.count,parseFloat(sensordata.hcao)]);
+
+
+            flot_humidity.setData([getdrawdata(chartdata.humidity.data)]);
+            flot_humidity.draw();
+
+          //  flot_temp.setData([chartdata.temp.data]);
+
+            // var drawdata = chartdata.temp.data.slice(-100);
+            // console.log(drawdata.length);
+            // for(i = 0; i< drawdata.length;i++){
+            //   drawdata[i][0] = i;
+            // }
+            // console.log(drawdata[0]);
+            // console.log(drawdata[1]);
+            // flot_temp.setData([drawdata]);
+            flot_temp.setData([getdrawdata(chartdata.temp.data)]);
+            flot_temp.draw();
+
+            flot_pm25.setData([getdrawdata(chartdata.pm25.data)]);
+            flot_pm25.draw();
+
+            flot_hcao.setData([chartdata.hcao.data]);
+            flot_hcao.draw();
+
+
 			//setTimeout(updateflot, updateInterval);
 		}
-        
+
         //console.log(getRandomData());
-		//updateflot();
+	//	updateflot();
+function getdrawdata(x){
+  var drawdata = x.slice(-100);
+  console.log(drawdata.length);
+  for(i = 0; i< drawdata.length;i++){
+    drawdata[i][0] = i;
+  }
+  return drawdata;
+}
 
-
-            
-            
-            
     </script>
-        
+
 
     </body>
 </html>
